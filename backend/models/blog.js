@@ -1,13 +1,7 @@
 import mongoose from 'mongoose';
 
-import mongoose from 'mongoose';
-
 const BlogSchema = new mongoose.Schema({
     title: {
-        type: String,
-        required: true,
-    },
-    content: {
         type: String,
         required: true,
     },
@@ -20,6 +14,19 @@ const BlogSchema = new mongoose.Schema({
         type: [String],
         default: [],
     },
+    contentSections: [
+        {
+            type: {
+                type: String,
+                enum: ['text', 'image'], // Define whether the section is text or an image
+                required: true,
+            },
+            content: {
+                type: String,
+                required: true, // Either text content or an image URL
+            }
+        }
+    ],
     createdAt: {
         type: Date,
         default: Date.now,
@@ -39,11 +46,32 @@ const BlogSchema = new mongoose.Schema({
     views: {
         type: Number,
         default: 0,
+    },
+    shares: {
+        count: {
+            type: Number,
+            default: 0,
+        },
+        sharedBy: [
+            {
+                userId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User'
+                },
+                sharedAt: {
+                    type: Date,
+                    default: Date.now
+                },
+                platform: {
+                    type: String, // Optional: could track which platform it was shared on (e.g., 'Facebook', 'Twitter')
+                }
+            }
+        ]
     }
 }, {
     timestamps: true
 });
 
-const Blog = mongoose.Model('Blog', BlogSchema);
+const Blog = mongoose.model('Blog', BlogSchema);
 
 export default Blog;
